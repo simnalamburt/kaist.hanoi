@@ -1,14 +1,14 @@
 CC = gcc
 OBJS = hanoi.o
 TARGET = hanoi
- 
+
 OBJS = hanoi.o main.o
 SRCS = hanoi.c main.c
- 
-all : $(TARGET)
- 
+
+all: $(TARGET)
+
 $(TARGET): $(OBJS)
 	$(CC) -o $@ $(OBJS)
 
-clean :
+clean:
 	rm -f $(OBJS) $(TARGET)

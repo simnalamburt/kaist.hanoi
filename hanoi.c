@@ -2,7 +2,6 @@
 
 /* You can add any functions */
 
-void hanoi(char *input)
-{
-	/* Implement here */
+void hanoi(char* input) {
+  /* Implement here */
 }
