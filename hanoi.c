@@ -29,18 +29,18 @@ static job pop() {
   return *--_stack_top;
 }
 
-static void dump() {
-  printf("_stack = [");
-  for (struct job* it=_stack; it<_stack_top; ++it) {
-    printf("(%d, %d, %d, %d), ", it->count, it->src, it->dst, it->number);
-  }
-  puts("]");
+static double time_in_float() {
+  // Getting the current time in millisecond precisenes
+
+  struct timeval tv;
+  gettimeofday(&tv, 0);
+  return (tv.tv_sec) * 1000.0 + (tv.tv_usec) / 1000.0;
 }
 
 static void solve(int count) {
   int i = 1, third;
 
-  printf("N=%d, Time stamp: %d\n", count, 0);
+  printf("N=%d, Time stamp: %lf\n", count, time_in_float());
   push(count, 0, 1, count);
 
   do {
