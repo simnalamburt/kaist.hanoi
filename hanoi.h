@@ -1,4 +1,3 @@
-#include <stdio.h>
-#include <sys/time.h>
+#pragma once
 
 void hanoi(char*);
