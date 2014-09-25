@@ -1,2 +1,5 @@
 # Ignore build results
 hanoi
+
+# Ignore process results
+output_file
