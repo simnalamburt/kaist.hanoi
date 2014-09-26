@@ -3,6 +3,41 @@
 #include <sys/time.h>
 #include "hanoi.h"
 
+
+// 시간 측정
+static double time_in_float() {
+  struct timeval tv;
+  gettimeofday(&tv, 0);
+  return (tv.tv_sec) * 1000.0 + (tv.tv_usec) / 1000.0;
+}
+
+
+// 재귀버전: solve1(n)
+static int i;
+static void solve_rec(int count, int src, int dst) {
+  int tmp;
+
+  if (count == 1) {
+    printf("%d: Disk %d from %c to %c\n", i++, count, src + 'a', dst + 'a');
+  } else {
+    tmp = 3 - src - dst;
+    solve_rec(count - 1, src, tmp);
+    printf("%d: Disk %d from %c to %c\n", i++, count, src + 'a', dst + 'a');
+    solve_rec(count - 1, tmp, dst);
+  }
+}
+
+static void solve1(int count) {
+  printf("N=%d, Time stamp: %lf\n", count, time_in_float());
+
+  i = 1;
+  solve_rec(count, 0, 1);
+
+  putchar('\n');
+}
+
+
+// 반복문버전: solve2(n)
 typedef struct job {
   int count;  // 옮길 판들의 갯수 (자연수)
   int src;    // 옮길 판들의 출발지 (0, 1, 2)
@@ -29,15 +64,7 @@ static job pop() {
   return *--_stack_top;
 }
 
-static double time_in_float() {
-  // Getting the current time in millisecond precisenes
-
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  return (tv.tv_sec) * 1000.0 + (tv.tv_usec) / 1000.0;
-}
-
-static void solve(int count) {
+static void solve2(int count) {
   int i = 1, third;
 
   printf("N=%d, Time stamp: %lf\n", count, time_in_float());
@@ -62,6 +89,7 @@ static void solve(int count) {
   putchar('\n');
 }
 
+
 void hanoi(char* filename) {
   FILE* f = fopen(filename, "r");
 
@@ -70,7 +98,8 @@ void hanoi(char* filename) {
 
   int count;
   while (fscanf(f, "%d", &count) != EOF) {
-    solve(count);
+    // solve1(n) 혹은 solve2(n) 호출하면 됨
+    solve1(count);
   }
 
   fclose(f);
