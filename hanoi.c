@@ -5,7 +5,7 @@
 #include "hanoi.h"
 
 
-static void nop() {
+static void nop(void) {
   static int _i = 0;
   ++_i;
 }
@@ -47,7 +47,7 @@ typedef struct job {
 static job _stack[128];
 static job* _stack_top = _stack;
 
-static bool empty() {
+static bool empty(void) {
   return _stack_top == _stack;
 }
 
@@ -59,7 +59,7 @@ static void push(int count, int src, int dst, int number) {
   ++_stack_top;
 }
 
-static job pop() {
+static job pop(void) {
   return *--_stack_top;
 }
 
@@ -84,15 +84,15 @@ static void solve2(int N) {
 
 
 // 테스트
-static double utime() {
+static double utime(void) {
   struct rusage ru;
   getrusage(RUSAGE_SELF, &ru);
   return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
 }
 
 static double _begin;
-static void start() { _begin = utime(); }
-static double done() { return utime() - _begin; }
+static void start(void) { _begin = utime(); }
+static double done(void) { return utime() - _begin; }
 
 void hanoi(int begin, int count) {
   const char* g = "\033[32m";

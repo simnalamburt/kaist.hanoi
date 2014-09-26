@@ -6,8 +6,8 @@
 #include "hanoi.h"
 
 
-void wrong_args();
-void regex_init_failed();
+void wrong_args(const char*);
+void regex_init_failed(void);
 void regex_match_failed(regex_t*, int);
 
 
@@ -67,7 +67,7 @@ void wrong_args(const char* arg0) {
   exit(1);
 }
 
-void regex_init_failed() {
+void regex_init_failed(void) {
   fprintf(stderr, "Could not compile regex\n");
   exit(2);
 }
