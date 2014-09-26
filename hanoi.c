@@ -4,28 +4,9 @@
 #include "hanoi.h"
 
 
-// Helper functions
-static int _i;
-static double _begin;
-
-static double utime() {
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
-}
-
-static void start(int count) {
-  printf("N = \033[32m%2d\033[0m", count);
-  _i = 1;
-  _begin = utime();
-}
-
-static void result(int src, int dst, int number) {
-  ++_i; // No opti
-}
-
-static void done() {
-  printf("   time = \033[33m%lf\033[0m sec\n", utime() - _begin);
+static void nop() {
+  static int _i = 0;
+  ++_i;
 }
 
 
@@ -39,7 +20,7 @@ void solve_rec(int count, int src, int dst, int number) {
   if (count <= 0) {
     return;
   } else if (count == 1) {
-    result(src, dst, number);
+    nop();
   } else {
     int tmp = 3 - src - dst;
 
@@ -50,9 +31,7 @@ void solve_rec(int count, int src, int dst, int number) {
 }
 
 static void solve1(int N) {
-  start(N);
   solve_rec(N, 0, 1, N);
-  done();
 }
 
 
@@ -84,8 +63,6 @@ static job pop() {
 }
 
 static void solve2(int N) {
-  start(N);
-
   push(N, 0, 1, N);
   do {
     job job = pop();
@@ -93,7 +70,7 @@ static void solve2(int N) {
     if (job.count <= 0) {
       continue;
     } else if (job.count == 1) {
-      result(job.src, job.dst, job.number);
+      nop();
     } else {
       int tmp = 3 - job.src - job.dst;
 
@@ -102,31 +79,35 @@ static void solve2(int N) {
       push(job.count - 1, job.src, tmp,     job.number - 1);  // Step 1
     }
   } while (!empty());
-
-  done();
 }
 
 
 // 테스트
-void test(char* filename, void (*testee)(int)) {
-  int c;
-  FILE* f = fopen(filename, "r");
-
-  // 첫번째줄 생략
-  do { c = fgetc(f); } while(c != '\n' && c != EOF);
-
-  // 정수 입력받아 테스트 반복
-  while (fscanf(f, "%d", &c) != EOF) {
-    testee(c);
-  }
-
-  fclose(f);
+static double utime() {
+  struct timeval tv;
+  gettimeofday(&tv, 0);
+  return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
 }
 
-void hanoi(char* filename) {
-  puts(" --- 재귀 ---");
-  test(filename, solve1);
-  puts("");
-  puts(" --- 반복 ---");
-  test(filename, solve2);
+static double _begin;
+static void start() { _begin = utime(); }
+static double done() { return utime() - _begin; }
+
+void hanoi(int begin, int count) {
+  const char* g = "\033[32m";
+  const char* y = "\033[33m";
+  const char* r = "\033[0m";
+
+  for (int i = begin; i < begin + count; ++i) {
+    start();
+    solve1(i);
+    double t1 = done();
+
+    start();
+    solve2(i);
+    double t2 = done();
+
+    printf("N = %s%2d%s   recursive = %s%lf%s sec   iterative = %s%lf%s\n",
+      g, i, r, y, t1, r, y, t2, r);
+  }
 }

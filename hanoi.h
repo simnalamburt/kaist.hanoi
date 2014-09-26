@@ -1,3 +1,3 @@
 #pragma once
 
-void hanoi(char*);
+void hanoi(int, int);
