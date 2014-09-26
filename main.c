@@ -35,7 +35,7 @@ bool match(const char* target, const char* exp) {
 }
 
 int main(int argc, char** argv) {
-  if (argc != 2) { wrong_args(); }
+  if (argc != 2) { wrong_args(argv[0]); }
   const char* input = argv[1];
 
   int start, count;
@@ -44,10 +44,11 @@ int main(int argc, char** argv) {
     count = 1;
   } else if (match(input, "^[0-9]+-[0-9]+$")) {
     char* delim = strchr(input, '-');
+
     start = strtol(input, &delim, 10);
     count = strtol(delim+1, 0, 10) - start + 1;
   } else {
-    wrong_args();
+    wrong_args(argv[0]);
   }
 
   hanoi(start, count);
@@ -56,18 +57,18 @@ int main(int argc, char** argv) {
 
 
 // Error cases
-void wrong_args() {
-  fputs("Arguments should be like:\n", stderr);
-  fputs("\033[33m", stderr);
-  fputs("  ./hanoi 30\n", stderr);
-  fputs("  ./hanoi 0-20\n", stderr);
-  fputs("  ./hanoi 25-27\n", stderr);
-  fputs("\033[0m", stderr);
+void wrong_args(const char* arg0) {
+  fprintf(stderr, "Arguments should be like:\n");
+  fprintf(stderr, "\033[33m");
+  fprintf(stderr, "  %s 30\n", arg0);
+  fprintf(stderr, "  %s 0-20\n", arg0);
+  fprintf(stderr, "  %s 25-27\n", arg0);
+  fprintf(stderr, "\033[0m");
   exit(1);
 }
 
 void regex_init_failed() {
-  fputs("Could not compile regex\n", stderr);
+  fprintf(stderr, "Could not compile regex\n");
   exit(2);
 }
 
