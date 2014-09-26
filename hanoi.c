@@ -36,7 +36,9 @@ void solve_rec(int count, int src, int dst, int number) {
   //    dst : 옮길 판들의 목적지                 (0, 1, 2)
   // number : 옮길 판들 가운데 제일 큰 판의 번호 (0, 1, ... count)
 
-  if (count == 1) {
+  if (count <= 0) {
+    return;
+  } else if (count == 1) {
     result(src, dst, number);
   } else {
     int tmp = 3 - src - dst;
@@ -88,7 +90,9 @@ static void solve2(int N) {
   do {
     job job = pop();
 
-    if (job.count == 1) {
+    if (job.count <= 0) {
+      continue;
+    } else if (job.count == 1) {
       result(job.src, job.dst, job.number);
     } else {
       int tmp = 3 - job.src - job.dst;
