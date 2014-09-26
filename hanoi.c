@@ -4,24 +4,40 @@
 #include "hanoi.h"
 
 
-// 시간 측정
-static double time_in_float() {
+// Helper functions
+static int _i;
+static double _begin;
+
+static double utime() {
   struct timeval tv;
   gettimeofday(&tv, 0);
-  return (tv.tv_sec) * 1000.0 + (tv.tv_usec) / 1000.0;
+  return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+}
+
+static void start(int count) {
+  printf("N = \033[32m%2d\033[0m", count);
+  _i = 1;
+  _begin = utime();
+}
+
+static void result(int src, int dst, int number) {
+  ++_i; // No opti
+}
+
+static void done() {
+  printf("   time = \033[33m%lf\033[0m sec\n", utime() - _begin);
 }
 
 
-// 재귀버전: solve1(n)
-static int _i;
+// 재귀
+void solve_rec(int count, int src, int dst, int number) {
+  //  count : 옮길 판들의 갯수                   (자연수)
+  //    src : 옮길 판들의 출발지                 (0, 1, 2)
+  //    dst : 옮길 판들의 목적지                 (0, 1, 2)
+  // number : 옮길 판들 가운데 제일 큰 판의 번호 (0, 1, ... count)
 
-//  count : 옮길 판들의 갯수                   (자연수)
-//    src : 옮길 판들의 출발지                 (0, 1, 2)
-//    dst : 옮길 판들의 목적지                 (0, 1, 2)
-// number : 옮길 판들 가운데 제일 큰 판의 번호 (0, 1, ... count)
-static void solve_rec(int count, int src, int dst, int number) {
   if (count == 1) {
-    printf("%d: Disk %d from %c to %c\n", _i++, number, src + 'a', dst + 'a');
+    result(src, dst, number);
   } else {
     int tmp = 3 - src - dst;
 
@@ -31,17 +47,14 @@ static void solve_rec(int count, int src, int dst, int number) {
   }
 }
 
-static void solve1(int count) {
-  printf("N=%d, Time stamp: %lf\n", count, time_in_float());
-
-  _i = 1;
-  solve_rec(count, 0, 1, count);
-
-  putchar('\n');
+static void solve1(int N) {
+  start(N);
+  solve_rec(N, 0, 1, N);
+  done();
 }
 
 
-// 반복문버전: solve2(n)
+// 반복
 typedef struct job {
   int count;  // 옮길 판들의 갯수                   (자연수)
   int src;    // 옮길 판들의 출발지                 (0, 1, 2)
@@ -68,17 +81,15 @@ static job pop() {
   return *--_stack_top;
 }
 
-static void solve2(int count) {
-  printf("N=%d, Time stamp: %lf\n", count, time_in_float());
-  push(count, 0, 1, count);
+static void solve2(int N) {
+  start(N);
 
-  int i = 1;
+  push(N, 0, 1, N);
   do {
     job job = pop();
 
     if (job.count == 1) {
-      printf("%d: Disk %d from %c to %c\n",
-        i++, job.number, job.src + 'a', job.dst + 'a');
+      result(job.src, job.dst, job.number);
     } else {
       int tmp = 3 - job.src - job.dst;
 
@@ -86,24 +97,32 @@ static void solve2(int count) {
       push(1,             job.src, job.dst, job.number);      // Step 2
       push(job.count - 1, job.src, tmp,     job.number - 1);  // Step 1
     }
-
   } while (!empty());
 
-  putchar('\n');
+  done();
 }
 
 
-void hanoi(char* filename) {
+// 테스트
+void test(char* filename, void (*testee)(int)) {
+  int c;
   FILE* f = fopen(filename, "r");
 
-  char buffer[128];
-  fgets(buffer, 128, f);
+  // 첫번째줄 생략
+  do { c = fgetc(f); } while(c != '\n' && c != EOF);
 
-  int count;
-  while (fscanf(f, "%d", &count) != EOF) {
-    // solve1(n) 혹은 solve2(n) 호출하면 됨
-    solve1(count);
+  // 정수 입력받아 테스트 반복
+  while (fscanf(f, "%d", &c) != EOF) {
+    testee(c);
   }
 
   fclose(f);
+}
+
+void hanoi(char* filename) {
+  puts(" --- 재귀 ---");
+  test(filename, solve1);
+  puts("");
+  puts(" --- 반복 ---");
+  test(filename, solve2);
 }
