@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <sys/time.h>
+#include <sys/resource.h>
 #include "hanoi.h"
 
 
@@ -84,9 +85,9 @@ static void solve2(int N) {
 
 // 테스트
 static double utime() {
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+  struct rusage ru;
+  getrusage(RUSAGE_SELF, &ru);
+  return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
 }
 
 static double _begin;
