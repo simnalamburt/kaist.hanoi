@@ -6,4 +6,4 @@ make
 target/hanoi 0-25
 ```
 
-![](https://simnalamburt.github.io/kaist-hanoi/screenshot.png)
+![](https://simnalamburt.github.io/kaist.hanoi/screenshot.png)
